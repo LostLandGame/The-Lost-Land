@@ -66,7 +66,10 @@ namespace LostLand.Combat.Map
             {
                 for (int i = 0; i < map.Length; ++i)
                 {
-                    DestroyImmediate(map[i].gameObject);
+                    if (map[i] != null)
+                    {
+                        DestroyImmediate(map[i].gameObject);
+                    }
                 }
             }
 
