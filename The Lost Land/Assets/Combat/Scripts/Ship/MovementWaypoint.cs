@@ -8,7 +8,7 @@ namespace LostLand.Combat.Ship
         public float DistanceRemaining;
         public float DistanceTravelled;
 
-        public Vector3 CurrentPosition;
-        public Vector3 FacingDirection;
+        public Vector2 CurrentPosition;
+        public Vector2 FacingDirection;
     }
 }

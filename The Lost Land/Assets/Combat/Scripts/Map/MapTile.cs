@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
-
-using LostLand.Utility.ObjectPool;
+using System.Collections.Generic;
 
 namespace LostLand.Combat.Map
 {
@@ -19,16 +17,38 @@ namespace LostLand.Combat.Map
         private int maxPosX;
         private int maxPosY;
 
+        private static Dictionary<MapTileData.MapTileType, GameObject> tileDict = new Dictionary<MapTileData.MapTileType, GameObject>();
+
         public void Init( MapTileData data)
         {
             tileData = data;
 
-            InitModel(tileData.Path);
+            InitModel();
         }
 
-        private void InitModel(string path)
+        private void InitModel()
         {
-            visualRep = ObjectPoolManager.SpawnObject(path);
+            if (tileData == null)
+                return;
+
+            GameObject go = null;
+            if(tileDict.ContainsKey(tileData.TileType))
+            {
+                go = tileDict[tileData.TileType];
+            }
+            else
+            {
+                go = Resources.Load(tileData.Path) as GameObject;
+                if(go == null)
+                {
+                    Debug.LogError("Could not load tile at path " + tileData.Path);
+                    return;
+                }
+
+                tileDict.Add(tileData.TileType, go);
+            }
+
+            visualRep = Instantiate(go);
 
             if(visualRep != null)
             {
@@ -43,6 +63,14 @@ namespace LostLand.Combat.Map
             minPosY = (int)transform.position.z;
             maxPosX = minPosX + width;
             maxPosY = minPosY + width;
+        }
+
+        public float GetMovementCost()
+        {
+            if (tileData == null)
+                return 1f;
+
+            return tileData.TraversalCost;
         }
     }
 }

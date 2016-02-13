@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
-
 using LostLand.Combat.Interaction;
+using LostLand.Combat.Map;
+
 namespace LostLand.Combat.Ship
 {
     public class ShipMovement : TurnbasedModule
@@ -51,12 +52,18 @@ namespace LostLand.Combat.Ship
             currentIndex = 0;
         }
 
-        private void OnMapClicked(Vector3 position)
+        private void OnMapClicked(Vector2 position)
         {
-            float distance = Vector3.Distance(waypoints[currentIndex].CurrentPosition, position);
-            float totalDistance = waypoints[currentIndex].DistanceTravelled + distanceTravelled;
+            if(currentIndex >= waypoints.Length - 1)
+            {
+                // Max waypoints reached, don't do anything
+                return;
+            }
+            
+            float distance = MapGenerator.GetDistance(waypoints[currentIndex].CurrentPosition, position);
+            float totalDistance = waypoints[currentIndex].DistanceTravelled + distance;
 
-            Vector3 direction = (position - waypoints[currentIndex].CurrentPosition).normalized;
+            Vector2 direction = (position - waypoints[currentIndex].CurrentPosition).normalized;
 
             if (totalDistance > MoveDistance)
             {
@@ -85,7 +92,15 @@ namespace LostLand.Combat.Ship
 
         public void RemoveWaypoint()
         {
+            if(currentIndex <= 0)
+            {
+                // TODO: Abort movement
+                return;
+            }
 
+            currentIndex--;
+
+            distanceTravelled = waypoints[currentIndex].DistanceTravelled;
         }
 
         public void ResetWaypoints()

@@ -7,7 +7,7 @@ namespace LostLand.Combat.Interaction
 {
     public class PlayerInput : MonoBehaviour
     {
-        public static System.Action<Vector3> OnMapClicked;
+        public static System.Action<Vector2> OnMapClicked;
 
         private int mapLayer = 0;
 
@@ -35,7 +35,7 @@ namespace LostLand.Combat.Interaction
             {
                 if(OnMapClicked != null)
                 {
-                    OnMapClicked(hit.point);
+                    OnMapClicked(new Vector2(hit.point.x, hit.point.z));
                 }
 
                 return true;
