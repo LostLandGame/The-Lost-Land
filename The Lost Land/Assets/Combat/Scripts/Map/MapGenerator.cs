@@ -7,6 +7,8 @@ namespace LostLand.Combat.Map
 {
     public class MapGenerator : MonoBehaviour
     {
+        public static System.Action OnMapCreated;
+
         [SerializeField]
         private int MapWidth;
         [SerializeField]
@@ -28,6 +30,16 @@ namespace LostLand.Combat.Map
 
         public static MapGenerator GetMapGenerator()
         {
+            if(mapInstance == null)
+            {
+                mapInstance = FindObjectOfType<MapGenerator>();
+
+                if(mapInstance)
+                {
+                    mapInstance.Init();
+                }
+            }
+
             return mapInstance;
         }
 
@@ -36,6 +48,11 @@ namespace LostLand.Combat.Map
         {
             mapInstance = this;
 
+            Init();
+        }
+
+        public void Init()
+        {
             InitData();
 
             CreateMap();
@@ -119,18 +136,23 @@ namespace LostLand.Combat.Map
                     }
                 }
             }
+
+            if(OnMapCreated != null)
+            {
+                OnMapCreated();
+            }
         }
         #endregion
 
         #region Distance Calculation
         public static float GetDistance(Vector2 start, Vector2 end)
         {
-            return mapInstance.getDistance(start, end);
+            return GetMapGenerator().getDistance(start, end);
         }
 
         public static Vector2 GetEndPoint(Vector2 start, Vector2 direction, float maxDistance)
         {
-            return mapInstance.getEndPoint(start, direction, maxDistance);
+            return GetMapGenerator().getEndPoint(start, direction, maxDistance);
         }
 
         #region Helpers
@@ -182,7 +204,7 @@ namespace LostLand.Combat.Map
             float distToNext = Vector2.Distance(start, intermediate) * cost;
             if (maxDistance < distToNext)
             {
-                return start + maxDistance * direction / cost; // Max distance reached
+                return start + maxDistance / distToNext * direction; // Max distance reached
             }
             else
             {

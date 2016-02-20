@@ -11,6 +11,8 @@ namespace LostLand.Combat.Interaction
 
         private int mapLayer = 0;
 
+        private Vector2 oldPos = Vector2.zero;
+
         void Awake()
         {
             mapLayer = LayerMask.NameToLayer("MapTile");
@@ -24,6 +26,24 @@ namespace LostLand.Combat.Interaction
                 {
                     // TODO: Do other raycasts
                 }
+            }
+
+            if(Input.GetMouseButtonDown(1))
+            {
+                oldPos = Input.mousePosition;
+            }
+            else if (Input.GetMouseButton(1))
+            {
+                Vector2 currPos = Input.mousePosition;
+                transform.Translate(new Vector3((currPos.x - oldPos.x) / Screen.width, 0f, (currPos.y - oldPos.y) / Screen.height), Space.World);
+
+                oldPos = currPos;
+            }
+
+            float scroll = Input.GetAxis("Mouse ScrollWheel");
+            if (!Mathf.Approximately(scroll, 0f))
+            {
+                transform.Translate(Vector3.up * scroll, Space.World);
             }
         }
 

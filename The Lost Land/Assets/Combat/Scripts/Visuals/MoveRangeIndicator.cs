@@ -19,12 +19,30 @@ namespace LostLand.Combat.Visuals
         public MapGenerator gen;
 
         private Mesh circleMesh = null;
-
+        
         [ContextMenu("Test circle")]
         public void Test()
         {
             //MakeCircle(new Vector2(3f, 3f), 5f);
-            MakeCone(new Vector2(3f, 3f), 5f, Vector2.right, 90f);
+            MakeCone(new Vector2(1f, 1f), 5f, Vector2.right, 90f);
+        }
+
+        public void HideIndicator()
+        {
+            if (filter)
+            {
+                filter.gameObject.SetActive(false);
+            }
+        }
+
+        public void ShowMoveCone(Vector2 origin, float maxDistance, Vector2 facing, float angle)
+        {
+            MakeCone(origin, maxDistance, facing, angle);
+
+            if(filter)
+            {
+                filter.gameObject.SetActive(true);
+            }
         }
 
         private void MakeCircle(Vector2 origin, float maxDistance)
@@ -94,14 +112,15 @@ namespace LostLand.Combat.Visuals
             Vector2 currentEnd = Vector2.zero;
 
             // Make first triangle.
-            vertices[0] = new Vector3(origin.x, offset, origin.y);
+            //vertices[0] = new Vector3(origin.x, offset, origin.y);
+            vertices[0] = new Vector3(0f, offset, 0f);
 
             for (int i = 1; i < numPoints + 1; i++)
             {
                 currentAngle += angleStep;
                 currentForward = new Vector2(Mathf.Cos(currentAngle), Mathf.Sin(currentAngle));
-                //currentEnd = MapGenerator.GetEndPoint(origin, currentForward, maxDistance);
-                currentEnd = gen.HelpGetEndPoint(origin, currentForward, maxDistance);
+                currentEnd = MapGenerator.GetEndPoint(origin, currentForward, maxDistance);
+                //currentEnd = gen.HelpGetEndPoint(origin, currentForward, maxDistance);
 
                 vertices[i] = new Vector3(currentEnd.x, offset, currentEnd.y);
             }
@@ -124,8 +143,8 @@ namespace LostLand.Combat.Visuals
 
             circleMesh.RecalculateBounds();
             circleMesh.RecalculateNormals();
-
-            if (filter.sharedMesh == null)
+            
+            if (filter.sharedMesh != circleMesh)
             {
                 filter.sharedMesh = circleMesh;
             }
